@@ -10,7 +10,7 @@ var io = require('socket.io')(http);
 
 let socketServer = require('socket.io')(http);
 
-
+var ent = require('ent');
 
 //bot discord
 client.on('ready', () => {
@@ -20,9 +20,9 @@ client.on('ready', () => {
   
 
 client.on("message", msg => {
-    console.log("\x1b[31m", msg.author.username);
-    console.log("\x1b[37m",msg.content,"\x1b[37m");
-    socketServer.emit("<message", { 'sender' : msg.author.username, 'content' : msg.content })
+    //console.log("\x1b[31m", msg.author.username);
+    //console.log("\x1b[37m",msg.content,"\x1b[37m");
+    socketServer.emit("<message", { 'sender' :  ent.encode(msg.author.username), 'content' :  ent.encode(msg.content) })
 })
 
 client.login(token);
@@ -31,9 +31,8 @@ client.login(token);
 
 //web
 
-
-express.get('/', (request, response) => {
-    fs.readFile('./index.html')
+express.get('/about', (request, response) => {
+    fs.readFile('./about.html')
     .then((content) => {
         // Writes response header
         response.writeHead(200, { 'Content-Type': 'text/html' });
@@ -47,21 +46,37 @@ express.get('/', (request, response) => {
     });
 });
 
+express.get('/', (request, response) => {
+  fs.readFile('./index.html')
+  .then((content) => {
+      // Writes response header
+      response.writeHead(200, { 'Content-Type': 'text/html' });
+      // Writes response content
+      response.end(content);
+  })
+  .catch((error) => {
+      // Returns 404 error: page not found
+      response.writeHead(404, { 'Content-Type': 'text/plain' });
+      response.end('Page not found.');
+  });
+});
+
 
 express.use('/', (request, response) => {
-    fs.readFile('./client.js')
-      .then((content) => {
-        // Writes response header
-        response.writeHead(200, { 'Content-Type': 'application/javascript' });
-        // Writes response content
-        response.end(content);
-      })
-      .catch((error) => {
-        // Returns 404 error: page not found
-        response.writeHead(404, { 'Content-Type': 'text/plain' });
-        response.end('Page not found.');
-      });
-  });
+  fs.readFile('./client.js')
+    .then((content) => {
+      // Writes response header
+      response.writeHead(200, { 'Content-Type': 'application/javascript' });
+      // Writes response content
+      response.end(content);
+    })
+    .catch((error) => {
+      // Returns 404 error: page not found
+      response.writeHead(404, { 'Content-Type': 'text/plain' });
+      response.end('Page not found.');
+    });
+});
+
 
 
 io.on('connection', (socket) => {

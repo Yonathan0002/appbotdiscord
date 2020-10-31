@@ -1,6 +1,9 @@
 
 let socketClient = io();
 let displaymsg = document.querySelector("ul#message");
+
 socketClient.on('<message', message => {
-    displaymsg.innerHTML += "<li><h2>"+ message.sender +"</h2> <h4>" + message.content + "<h4/></li>";
+    let affichemessage = document.createElement("LI");
+    affichemessage.innerHTML += `<span class="badge badge-pill badge-dark">${message.sender}</span><p>${message.content}<p/>`;
+    displaymsg.prepend(affichemessage);
 });
