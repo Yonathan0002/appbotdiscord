@@ -1,0 +1,7 @@
+<%- include('header') -%>
+<h2>Le bot est connecté aux serveurs:</h2>
+<% guilds.forEach( function(guild) { %>
+    <p><img src="<%= "https://cdn.discordapp.com/icons/" + guild.id + "/" + guild.icon + ".jpg" %>" size="40" class="rounded-circle" style="width: 50px; height: 50px;"> <%= guild.name -%></p>
+<% }); %>
+
+<%- include('footer') -%>

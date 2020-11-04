@@ -39,9 +39,18 @@ client.login(token);
 
 //web
 
+
+//route
 express.get('/about', (request, response) => {
   response.render('about')
 });
+
+express.get('/listserver', function(request, response){
+  //console.log(client.guilds.cache.array())
+  // client.guilds.cache.array() et la liste des serveur en array
+  var guilds = client.guilds.cache.array()
+  response.render('listserver', {guilds : guilds} )
+})
 
 express.get('/', (request, response) => {
   response.render('index')
