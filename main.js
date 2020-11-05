@@ -4,20 +4,26 @@ const client = new Discord.Client();
 var token = require('./token.js');
 
 //express
-let express = require('express')();
-let http = require('http').createServer(express);
+let express = require('express')
+let app = express();
+let http = require('http').createServer(app);
 let fs = require('fs').promises;
 var io = require('socket.io')(http);
 
 let socketServer = require('socket.io')(http);
 
+
+
+
 //ent
-//empeche les injection html
+//empeche les injections html
 var ent = require('ent');
 
 //EJS
-express.set('views', './view')
-express.set('view engine', 'ejs')
+app.set('views', './view')
+app.set('view engine', 'ejs')
+
+app.use('/public' ,express.static('public'));
 
 
 //bot discord
@@ -36,42 +42,25 @@ client.on("message", msg => {
 client.login(token);
 
 
-
-//web
-
-
 //route
-express.get('/about', (request, response) => {
+app.get('/about', (request, response) => {
   response.render('about')
 });
 
-express.get('/listserver', function(request, response){
+app.get('/listserver', function(request, response){
   //console.log(client.guilds.cache.array())
   // client.guilds.cache.array() et la liste des serveur en array
   var guilds = client.guilds.cache.array()
   response.render('listserver', {guilds : guilds} )
 })
 
-express.get('/', (request, response) => {
+app.get('/chat',(request, response) => {
+  response.render('chat')
+});
+
+app.get('/', (request, response) => {
   response.render('index')
 });
-
-
-express.use('/', (request, response) => {
-  fs.readFile('./client.js')
-    .then((content) => {
-      // Writes response header
-      response.writeHead(200, { 'Content-Type': 'application/javascript' });
-      // Writes response content
-      response.end(content);
-    })
-    .catch((error) => {
-      // Returns 404 error: page not found
-      response.writeHead(404, { 'Content-Type': 'text/plain' });
-      response.end('Page not found.');
-    });
-});
-
 
 
 io.on('connection', (socket) => {
